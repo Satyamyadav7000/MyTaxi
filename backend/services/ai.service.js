@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY);
-const model = genAI.getGenerativeModel({
+const genAI = process.env.GOOGLE_AI_KEY ? new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY) : null;
+const model = genAI ? genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
     generationConfig: {
         responseMimeType: "application/json",
@@ -99,11 +99,18 @@ const model = genAI.getGenerativeModel({
        
        
     `
-});
+}) : null;
 
 export const generateResult = async (prompt) => {
+    if (!model) {
+        return JSON.stringify({ text: "AI feature is not configured. Please set GOOGLE_AI_KEY environment variable." });
+    }
 
-    const result = await model.generateContent(prompt);
-
-    return result.response.text()
+    try {
+        const result = await model.generateContent(prompt);
+        return result.response.text();
+    } catch (error) {
+        console.log("AI generation error:", error.message);
+        return JSON.stringify({ text: "AI is temporarily unavailable." });
+    }
 }

@@ -11,7 +11,10 @@ connect();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,7 +27,7 @@ app.use("/ai", aiRoutes)
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('MyTaxi Backend is running!');
 });
 
 export default app; 
