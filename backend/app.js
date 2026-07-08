@@ -12,7 +12,10 @@ connect();
 const app = express();
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || '*',
+    origin: (origin, callback) => {
+        // Dynamically allow any origin to make it work with credentials (needed for Vercel previews & local development)
+        callback(null, true);
+    },
     credentials: true
 }));
 app.use(morgan('dev'));
